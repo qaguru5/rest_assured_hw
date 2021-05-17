@@ -1,0 +1,75 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath group: 'io.qameta.allure', name: 'allure-gradle', version: '2.8.1'
+    }
+}
+
+plugins {
+    id 'java-library'
+    id 'application'
+    id 'io.qameta.allure' version '2.8.1'
+}
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+def allureVersion = "2.13.9"
+
+allure {
+    version = allureVersion
+    autoconfigure = true
+    aspectjweaver = true
+    configuration = "testImplementation"
+    useJUnit5 {
+        version = allureVersion
+    }
+}
+
+dependencies {
+    testImplementation (
+            "io.qameta.allure:allure-java-commons:$allureVersion",
+            "io.qameta.allure:allure-selenide:$allureVersion",
+            "io.qameta.allure:allure-rest-assured:$allureVersion",
+            "com.fasterxml.jackson.core:jackson-annotations:2.12.3",
+            "org.hamcrest:hamcrest-all:1.3",
+            "org.aspectj:aspectjweaver:1.9.6",
+            "com.codeborne:selenide:5.20.4",
+            "io.rest-assured:rest-assured:4.3.3",
+            "org.slf4j:slf4j-simple:1.7.30",
+            "org.assertj:assertj-core:3.19.0",
+            "org.junit.jupiter:junit-jupiter:5.7.1"
+    )
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+}
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
+
+tasks.withType(Test) {
+    systemProperties(System.getProperties())
+    useJUnitPlatform()
+    if (project.hasProperty("web_threads")) {
+        systemProperties += [
+                'junit.jupiter.execution.parallel.enabled'                 : true,
+                'junit.jupiter.execution.parallel.mode.default'            : 'concurrent',
+                'junit.jupiter.execution.parallel.mode.classes.default'    : 'concurrent',
+                'junit.jupiter.execution.parallel.config.strategy'         : 'fixed',
+                'junit.jupiter.execution.parallel.config.fixed.parallelism': project.getProperty("web_threads").toInteger()
+        ]
+    }
+    testLogging {
+        lifecycle {
+            events "started", "skipped", "failed", "standard_error", "standard_out"
+            exceptionFormat "short"
+        }
+    }
+}
