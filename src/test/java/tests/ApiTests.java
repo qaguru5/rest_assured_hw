@@ -22,7 +22,6 @@ public class ApiTests {
     private static final int STATUS_NOT_FOUND = 404;
     private static final int STATUS_SUCCESS = 200;
 
-
     @BeforeEach
     public void setBaseUri() {
         RestAssured.baseURI = "https://reqres.in";
@@ -46,7 +45,7 @@ public class ApiTests {
     @DisplayName("Get response status code ${NOT_FOUND_STATUS} from data of missing user")
     public void getStatusNotFoundForMissingUser() {
         Response getStatusResponse = apiSteps.getUserData(MISSING_USER_ID, STATUS_NOT_FOUND);
-        assertThat(getStatusResponse.getStatusCode()).isEqualTo(404);
+        assertThat(getStatusResponse.getStatusCode()).isEqualTo(STATUS_NOT_FOUND);
     }
 
     @Test

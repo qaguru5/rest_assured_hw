@@ -4,17 +4,23 @@ import io.qameta.allure.Step;
 import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.response.Response;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
 
 public class ApiSteps {
+    Map<String,String> postData = new HashMap<>();
 
     @Step("Create user")
     public Response createUser(String name, String job) {
+        postData.put("name", name);
+        postData.put("job", job);
         return given()
                 .filter(new AllureRestAssured())
                 .contentType(JSON)
-                .body("{ \"name\": \""+name+"\", " + "\"job\": \""+job+"\" }")
+                .body(postData)
                 .when()
                 .post("/api/users")
                 .then()
@@ -24,10 +30,12 @@ public class ApiSteps {
 
     @Step("Update user data with PATCH")
     public Response updateUserDataWithPatch(String name, String job) {
+        postData.put("name", name);
+        postData.put("job", job);
        return given()
                 .filter(new AllureRestAssured())
                 .contentType(JSON)
-                .body("{ \"name\": \""+name+"\", " + "\"job\": \""+job+"\" }")
+                .body(postData)
                 .when()
                 .patch("/api/users/2")
                 .then()
@@ -49,10 +57,12 @@ public class ApiSteps {
 
     @Step("Register new user")
     public Response registerUser(String email, String password, int statusCode) {
+        postData.put("email", email);
+        postData.put("password", password);
         return given()
                 .filter(new AllureRestAssured())
                 .contentType(JSON)
-                .body("{ \"email\": \""+email+"\", " + "\"password\": \""+password+"\" }")
+                .body(postData)
                 .when()
                 .post("/api/register")
                 .then()
@@ -62,14 +72,16 @@ public class ApiSteps {
 
     @Step("Authorization")
     public Response login(String email, String password, int statusCode) {
+        postData.put("email", email);
+        postData.put("password", password);
         return given()
                 .filter(new AllureRestAssured())
                 .contentType(JSON)
-                .body("{ \"email\": \""+email+"\", " + "\"password\": \""+password+"\" }")
+                .body(postData)
                 .when()
                 .post("/api/login")
                 .then()
                 .statusCode(statusCode)
                 .extract().response();
     }
-}
+ }
